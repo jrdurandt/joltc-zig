@@ -20,5 +20,6 @@
         "README.md",
         "LICENSE",
         "LICENSE-joltc",
+        "src",
     },
 }
