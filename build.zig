@@ -65,6 +65,7 @@ pub fn build(b: *std.Build) void {
     } else {
         joltc.linkSystemLibrary("advapi32");
     }
+    joltc.installHeader(joltc_dep.path("include"));
 
     const flags = &.{
         // "-std=c++17",
@@ -240,7 +241,10 @@ pub fn build(b: *std.Build) void {
 
     const jolt = b.addModule("root", .{
         .root_source_file = b.path("src/root.zig"),
-        .imports = &.{.{ .name = "options", .module = options_module }},
+        .imports = &.{.{
+            .name = "options",
+            .module = options_module,
+        }},
     });
     jolt.addIncludePath(joltc_dep.path("include"));
     jolt.linkLibrary(joltc);
