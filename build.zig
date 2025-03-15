@@ -223,6 +223,7 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(lib);
 
+    //Run test
     const test_step = b.step("test", "Run joltc tests");
     const tests = b.addTest(.{
         .name = "joltc-tests",
@@ -230,7 +231,6 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    b.installArtifact(tests);
     tests.addIncludePath(joltc_dep.path("include"));
     tests.linkLibrary(lib);
 
