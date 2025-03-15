@@ -1,5 +1,8 @@
 # joltc zig
 
+[![CI][ci-shd]][ci-url]
+[![LC][lc-shd]][lc-url]
+
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
 
 # joltc
