@@ -1,9 +1,11 @@
 # joltc zig
 
-[![CI][ci-shd]][ci-url]
-[![LC][lc-shd]][lc-url]
+[![License][https://img.shields.io/github/license/jrdurandt/joltc-zig.svg]][https://github.com/jrdurandt/joltc-zig/blob/master/LICENSE]
+[![Build status][https://img.shields.io/github/actions/workflow/status/jrdurandt/joltc-zig/ci.yaml]][https://github.com/jrdurandt/joltc-zig/blob/master/.github/workflows/ci.yaml]
 
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
+
+---
 
 # joltc
 
@@ -15,8 +17,3 @@ Zig build for [joltc](https://github.com/amerkoleci/joltc)
 ## Sponsors
 Please consider [SPONSOR](https://github.com/sponsors/amerkoleci) me (amerkoleci) to further help development and to allow faster issue triaging and new features to be implemented.
 **_NOTE:_** **any feature request** would require a [sponsor](https://github.com/sponsors/amerkoleci) in order to allow faster implementation and allow this project to continue.
-
-[ci-shd]: https://img.shields.io/github/actions/workflow/status/jrdurandt/joltc-zig/ci.yaml?branch=master&style=for-the-badge&logo=github&label=CI&labelColor=black
-[ci-url]: https://github.com/jrdurandt/joltc-zig/blob/master/.github/workflows/ci.yaml
-[lc-shd]: https://img.shields.io/github/license/jrdurandt/joltc-zig.svg?style=for-the-badge&labelColor=black
-[lc-url]: https://github.com/jrdurandt/AFLplusplus/blob/master/LICENSE

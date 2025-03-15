@@ -25,5 +25,5 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `build`
-        run: zig build
+      - name: Run `build test`
+        run: zig build test
