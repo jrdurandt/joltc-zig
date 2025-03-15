@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
         ) orelse true,
     };
 
-    const joltc = if (options.shared) blk: {
+    const lib = if (options.shared) blk: {
         const lib = b.addSharedLibrary(.{
             .name = "joltc",
             .target = target,
@@ -52,20 +52,19 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    b.installArtifact(joltc);
 
     const jolt_physics_dep = b.dependency("JoltPhysics", .{});
     const joltc_dep = b.dependency("joltc", .{});
 
-    joltc.addIncludePath(jolt_physics_dep.path("."));
-    joltc.addIncludePath(joltc_dep.path("include"));
-    joltc.linkLibC();
+    lib.addIncludePath(jolt_physics_dep.path("."));
+    lib.addIncludePath(joltc_dep.path("include"));
+    lib.linkLibC();
     if (target.result.abi != .msvc) {
-        joltc.linkLibCpp();
+        lib.linkLibCpp();
     } else {
-        joltc.linkSystemLibrary("advapi32");
+        lib.linkSystemLibrary("advapi32");
     }
-    joltc.installHeadersDirectory(
+    lib.installHeadersDirectory(
         joltc_dep.path("include"),
         "",
         .{},
@@ -81,7 +80,7 @@ pub fn build(b: *std.Build) void {
         "-fno-sanitize=undefined",
     };
 
-    joltc.addCSourceFiles(.{
+    lib.addCSourceFiles(.{
         .root = joltc_dep.path("src"),
         .files = &.{
             "joltc.c",
@@ -91,7 +90,7 @@ pub fn build(b: *std.Build) void {
         .flags = flags,
     });
 
-    joltc.addCSourceFiles(.{
+    lib.addCSourceFiles(.{
         .root = jolt_physics_dep.path("Jolt"),
         .files = &.{
             "AABBTree/AABBTreeBuilder.cpp",
@@ -222,6 +221,7 @@ pub fn build(b: *std.Build) void {
         },
         .flags = flags,
     });
+    b.installArtifact(lib);
 
     const test_step = b.step("test", "Run joltc tests");
     const tests = b.addTest(.{
@@ -232,25 +232,7 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(tests);
     tests.addIncludePath(joltc_dep.path("include"));
-    tests.linkLibrary(joltc);
+    tests.linkLibrary(lib);
 
     test_step.dependOn(&b.addRunArtifact(tests).step);
-
-    const options_step = b.addOptions();
-    inline for (std.meta.fields(@TypeOf(options))) |field| {
-        options_step.addOption(field.type, field.name, @field(options, field.name));
-    }
-    const options_module = options_step.createModule();
-
-    const jolt = b.addModule("root", .{
-        .root_source_file = b.path("src/root.zig"),
-        .imports = &.{
-            .{
-                .name = "options",
-                .module = options_module,
-            },
-        },
-    });
-    jolt.addIncludePath(joltc_dep.path("include"));
-    jolt.linkLibrary(joltc);
 }
