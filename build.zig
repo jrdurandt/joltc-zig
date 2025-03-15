@@ -65,7 +65,11 @@ pub fn build(b: *std.Build) void {
     } else {
         joltc.linkSystemLibrary("advapi32");
     }
-    joltc.installHeader(joltc_dep.path("include"));
+    joltc.installHeadersDirectory(
+        joltc_dep.path("include"),
+        "joltc",
+        .{},
+    );
 
     const flags = &.{
         // "-std=c++17",
