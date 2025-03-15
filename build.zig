@@ -37,33 +37,33 @@ pub fn build(b: *std.Build) void {
         ) orelse true,
     };
 
-    const lib = if (options.shared) blk: {
-        const lib = b.addSharedLibrary(.{
-            .name = "joltc",
-            .target = target,
-            .optimize = optimize,
-        });
-        if (target.result.os.tag == .windows) {
-            lib.root_module.addCMacro("JPC_API", "extern __declspec(dllexport)");
-        }
-        break :blk lib;
-    } else b.addStaticLibrary(.{
-        .name = "joltc",
+    const lib_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
+        .pic = true,
     });
+
+    if (target.result.os.tag == .windows and options.shared) {
+        lib_mod.addCMacro("JPC_API", "extern __declspec(dllexport)");
+    }
+
+    if (target.result.abi != .msvc) {
+        lib_mod.link_libcpp = true;
+    } else {
+        lib_mod.linkSystemLibrary("advapi32", .{ .needed = true });
+    }
 
     const jolt_physics_dep = b.dependency("JoltPhysics", .{});
     const joltc_dep = b.dependency("joltc", .{});
 
+    const lib = b.addLibrary(.{
+        .name = "joltc",
+        .root_module = lib_mod,
+        .linkage = if (options.shared) .dynamic else .static,
+    });
     lib.addIncludePath(jolt_physics_dep.path("."));
     lib.addIncludePath(joltc_dep.path("include"));
-    lib.linkLibC();
-    if (target.result.abi != .msvc) {
-        lib.linkLibCpp();
-    } else {
-        lib.linkSystemLibrary("advapi32");
-    }
     lib.installHeadersDirectory(
         joltc_dep.path("include"),
         "",
