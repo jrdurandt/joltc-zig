@@ -67,12 +67,11 @@ pub fn build(b: *std.Build) void {
     }
     joltc.installHeadersDirectory(
         joltc_dep.path("include"),
-        "joltc",
+        "",
         .{},
     );
 
     const flags = &.{
-        // "-std=c++17",
         if (options.enable_cross_platform_determinism) "-DJPH_CROSS_PLATFORM_DETERMINISTIC" else "",
         if (options.enable_debug_renderer) "-DJPH_DEBUG_RENDERER" else "",
         if (options.use_double_precision) "-DJPH_DOUBLE_PRECISION" else "",
