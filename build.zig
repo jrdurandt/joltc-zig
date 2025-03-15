@@ -243,4 +243,5 @@ pub fn build(b: *std.Build) void {
         .imports = &.{.{ .name = "options", .module = options_module }},
     });
     jolt.addIncludePath(joltc_dep.path("include"));
+    jolt.linkLibrary(joltc);
 }
