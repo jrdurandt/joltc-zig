@@ -244,10 +244,12 @@ pub fn build(b: *std.Build) void {
 
     const jolt = b.addModule("root", .{
         .root_source_file = b.path("src/root.zig"),
-        .imports = &.{.{
-            .name = "options",
-            .module = options_module,
-        }},
+        .imports = &.{
+            .{
+                .name = "options",
+                .module = options_module,
+            },
+        },
     });
     jolt.addIncludePath(joltc_dep.path("include"));
     jolt.linkLibrary(joltc);
