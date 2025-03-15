@@ -231,4 +231,16 @@ pub fn build(b: *std.Build) void {
     tests.linkLibrary(joltc);
 
     test_step.dependOn(&b.addRunArtifact(tests).step);
+
+    const options_step = b.addOptions();
+    inline for (std.meta.fields(@TypeOf(options))) |field| {
+        options_step.addOption(field.type, field.name, @field(options, field.name));
+    }
+    const options_module = options_step.createModule();
+
+    const jolt = b.addModule("root", .{
+        .root_source_file = b.path("src/root.zig"),
+        .imports = &.{.{ .name = "options", .module = options_module }},
+    });
+    jolt.addIncludePath(joltc_dep.path("include"));
 }
