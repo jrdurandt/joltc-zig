@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
         ) orelse true,
     };
 
-    const jolt = if (options.shared) blk: {
+    const joltc = if (options.shared) blk: {
         const lib = b.addSharedLibrary(.{
             .name = "joltc",
             .target = target,
@@ -52,18 +52,18 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    b.installArtifact(jolt);
+    b.installArtifact(joltc);
 
     const jolt_physics_dep = b.dependency("JoltPhysics", .{});
     const joltc_dep = b.dependency("joltc", .{});
 
-    jolt.addIncludePath(jolt_physics_dep.path("."));
-    jolt.addIncludePath(joltc_dep.path("include"));
-    jolt.linkLibC();
+    joltc.addIncludePath(jolt_physics_dep.path("."));
+    joltc.addIncludePath(joltc_dep.path("include"));
+    joltc.linkLibC();
     if (target.result.abi != .msvc) {
-        jolt.linkLibCpp();
+        joltc.linkLibCpp();
     } else {
-        jolt.linkSystemLibrary("advapi32");
+        joltc.linkSystemLibrary("advapi32");
     }
 
     const flags = &.{
@@ -77,7 +77,7 @@ pub fn build(b: *std.Build) void {
         "-fno-sanitize=undefined",
     };
 
-    jolt.addCSourceFiles(.{
+    joltc.addCSourceFiles(.{
         .root = joltc_dep.path("src"),
         .files = &.{
             "joltc.c",
@@ -87,7 +87,7 @@ pub fn build(b: *std.Build) void {
         .flags = flags,
     });
 
-    jolt.addCSourceFiles(.{
+    joltc.addCSourceFiles(.{
         .root = jolt_physics_dep.path("Jolt"),
         .files = &.{
             "AABBTree/AABBTreeBuilder.cpp",
@@ -218,4 +218,17 @@ pub fn build(b: *std.Build) void {
         },
         .flags = flags,
     });
+
+    const test_step = b.step("test", "Run joltc tests");
+    const tests = b.addTest(.{
+        .name = "joltc-tests",
+        .root_source_file = b.path("src/test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    b.installArtifact(tests);
+    tests.addIncludePath(joltc_dep.path("include"));
+    tests.linkLibrary(joltc);
+
+    test_step.dependOn(&b.addRunArtifact(tests).step);
 }
