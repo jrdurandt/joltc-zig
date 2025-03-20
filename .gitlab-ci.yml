@@ -1,0 +1,17 @@
+image: ubuntu:latest
+
+stages:
+  - build
+
+before_script:
+  - apt-get update
+  - apt-get install -y lld llvm llvm-dev clang
+
+build:
+  stage: build
+  script:
+    - apt-get install -y curl
+    - curl -fsSL https://ziglang.org/download/0.14.0/zig-linux-x86_64-0.14.0.tar.xz | tar -xJ
+    - export PATH=$PWD/zig-linux-x86_64-0.14.0:$PATH
+    - zig version
+    - zig build test
