@@ -1,8 +1,5 @@
 # joltc zig
 
-![GitLab License](https://img.shields.io/gitlab/license/jrdurandt/joltc-zig)
-![GitLab CI](https://gitlab.com/jrdurandt/joltc-zig/badges/master/pipeline.svg)
-
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
 
 ---
