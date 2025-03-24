@@ -37,25 +37,6 @@ pub fn build(b: *std.Build) !void {
         ) orelse true,
     };
 
-    // const lib_mod = b.createModule(.{
-    //     .target = target,
-    //     .optimize = optimize,
-    //     .link_libc = true,
-    //     .pic = true,
-    // });
-
-    // if (target.result.os.tag == .windows and options.shared) {
-    // lib_mod.addCMacro("JPC_API", "extern __declspec(dllexport)");
-    // }
-
-    // if (target.result.abi != .msvc) {
-    //     lib_mod.link_libcpp = true;
-    // } else {
-    //     lib_mod.linkSystemLibrary("advapi32", .{ .needed = true });
-    // }
-
-    // const joltc_dep = b.dependency("joltc", .{});
-
     //---------- Jolt Physics (JPH) ----------//
     const jph_lib_mod = b.createModule(.{
         .target = target,

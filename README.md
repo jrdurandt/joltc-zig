@@ -1,5 +1,8 @@
 # joltc zig
 
+[![License](https://img.shields.io/github/license/jrdurandt/joltc-zig.svg)](https://github.com/jrdurandt/joltc-zig/blob/master/LICENSE)
+[![Build status](https://img.shields.io/github/actions/workflow/status/jrdurandt/joltc-zig/ci.yaml)](https://github.com/jrdurandt/joltc-zig/blob/master/.github/workflows/ci.yaml)
+
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
 
 ---
