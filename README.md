@@ -5,6 +5,16 @@
 
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
 
+## Linux:
+`zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast`
+
+## Windows:
+`zig build -Dtarget=x86_64-windows -Doptimize=ReleaseFast`
+
+## MacOs:
+`zig build -Dtarget=x86_64-macos -Doptimize=ReleaseFast`
+`zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast`
+
 ---
 
 # joltc

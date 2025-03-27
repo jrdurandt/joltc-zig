@@ -29,7 +29,7 @@ pub fn build(b: *std.Build) !void {
             bool,
             "shared",
             "Build JoltC as shared lib",
-        ) orelse false,
+        ) orelse true,
         .no_exceptions = b.option(
             bool,
             "no_exceptions",
@@ -146,7 +146,17 @@ pub fn build(b: *std.Build) !void {
         .flags = flags,
     });
     joltc_lib.linkLibrary(jph_lib);
-    b.installArtifact(joltc_lib);
+
+    const out_path = switch (target.result.os.tag) {
+        .linux => "lib/linux",
+        .windows => "lib/windows",
+        .macos => "lib/macos",
+        else => "lib",
+    };
+
+    b.getInstallStep().dependOn(&b.addInstallArtifact(joltc_lib, .{
+        .dest_dir = .{ .override = .{ .custom = out_path } },
+    }).step);
 
     //Run test
     const test_step = b.step("test", "Run joltc tests");
