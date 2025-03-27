@@ -5,24 +5,32 @@
 
 Zig build for [joltc](https://github.com/amerkoleci/joltc)
 
-## Linux:
-`zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast`
+## Building
 
-Output: `zig-out/lib/linux/libjoltc.so`
+Defaults to static libs, use `-Dshared=true` to build shared libs.
+
+## Linux:
+`zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast -Dshared=true`
+
+Static output: `zig-out/lib/linux/libjoltc.a`
+Shared output: `zig-out/lib/linux/libjoltc.so`
 
 ## Windows:
 `zig build -Dtarget=x86_64-windows -Doptimize=ReleaseFast`
 
-Output: `zig-out/lib/windows/joltc.dll`
+Static output: `zig-out/lib/windows/joltc.lib`
+Shared output: `zig-out/lib/windows/joltc.dll`
 
 ## MacOs:
 `zig build -Dtarget=x86_64-macos -Doptimize=ReleaseFast`
 
-Output: `zig-out/lib/macos_x86_64/libjoltc.dylib`
+Static output: `zig-out/lib/macos_x86_64/libjoltc.a`
+Shared output: `zig-out/lib/macos_x86_64/libjoltc.dylib`
 
 `zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast`
 
-Output: `zig-out/lib/macos_arm/libjoltc.dylib`
+Static output: `zig-out/lib/macos_arm/libjoltc.a`
+Shared output: `zig-out/lib/macos_arm/libjoltc.dylib`
 
 ---
 
