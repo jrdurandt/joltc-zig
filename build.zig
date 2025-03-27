@@ -37,18 +37,18 @@ pub fn build(b: *std.Build) !void {
         ) orelse true,
     };
 
-    //---------- Jolt Physics (JPH) ----------//
-    const jph_lib_mod = b.createModule(.{
+    const lib_mod = b.addModule("joltc", .{
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
         .link_libcpp = true,
         .pic = true,
     });
 
-    const jph_lib = b.addLibrary(.{
-        .name = "Jolt",
-        .root_module = jph_lib_mod,
-        .linkage = .static,
+    const lib = b.addLibrary(.{
+        .name = "joltc",
+        .root_module = lib_mod,
+        .linkage = if (options.shared) .dynamic else .static,
     });
 
     const flags = &.{
@@ -64,8 +64,10 @@ pub fn build(b: *std.Build) !void {
     };
 
     const jph_dep = b.dependency("JoltPhysics", .{});
-    jph_lib.addIncludePath(jph_dep.path("."));
+    lib.addIncludePath(jph_dep.path("."));
 
+    //Walking the source of JoltPhysics(Jolt) and add the cpp files
+    //Might be better to add all the required cpp explicitly by name...
     var jph_src_dir = try std.fs.openDirAbsolute(
         jph_dep.path("Jolt").getPath(b),
         .{ .iterate = true },
@@ -95,48 +97,32 @@ pub fn build(b: *std.Build) !void {
         }
     }
 
-    jph_lib.addCSourceFiles(.{
+    lib.addCSourceFiles(.{
         .root = jph_dep.path("Jolt"),
         .files = jph_src_files.items,
         .flags = flags,
     });
-    b.installArtifact(jph_lib);
-
-    //---------- JoltC ----------//
-    const joltc_lib_mod = b.addModule("joltc", .{
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
-        .link_libcpp = true,
-        .pic = true,
-    });
 
     if (target.result.os.tag == .windows and options.shared) {
-        joltc_lib_mod.addCMacro("JPC_API", "extern __declspec(dllexport)");
+        lib_mod.addCMacro("JPC_API", "extern __declspec(dllexport)");
     }
 
     if (target.result.abi != .msvc) {
-        joltc_lib_mod.link_libcpp = true;
+        lib_mod.link_libcpp = true;
     } else {
-        joltc_lib_mod.linkSystemLibrary("advapi32", .{ .needed = true });
+        lib_mod.linkSystemLibrary("advapi32", .{ .needed = true });
     }
 
-    const joltc_lib = b.addLibrary(.{
-        .name = "joltc",
-        .root_module = joltc_lib_mod,
-        .linkage = if (options.shared) .dynamic else .static,
-    });
-
     const joltc_dep = b.dependency("joltc", .{});
-    joltc_lib.addIncludePath(jph_dep.path("."));
-    joltc_lib.addIncludePath(joltc_dep.path("include"));
-    joltc_lib.installHeadersDirectory(
+    lib.addIncludePath(jph_dep.path("."));
+    lib.addIncludePath(joltc_dep.path("include"));
+    lib.installHeadersDirectory(
         joltc_dep.path("include"),
         "",
         .{},
     );
 
-    joltc_lib.addCSourceFiles(.{
+    lib.addCSourceFiles(.{
         .root = joltc_dep.path("src"),
         .files = &.{
             "joltc.c",
@@ -145,16 +131,19 @@ pub fn build(b: *std.Build) !void {
         },
         .flags = flags,
     });
-    joltc_lib.linkLibrary(jph_lib);
 
     const out_path = switch (target.result.os.tag) {
         .linux => "lib/linux",
         .windows => "lib/windows",
-        .macos => "lib/macos",
-        else => "lib",
+        .macos => switch (target.result.cpu.arch) {
+            .aarch64 => "lib/macos_arm",
+            .x86_64 => "lib/macos_x86_64",
+            else => @panic("Unsupported architecture"),
+        },
+        else => @panic("Unsupported OS"),
     };
 
-    b.getInstallStep().dependOn(&b.addInstallArtifact(joltc_lib, .{
+    b.getInstallStep().dependOn(&b.addInstallArtifact(lib, .{
         .dest_dir = .{ .override = .{ .custom = out_path } },
     }).step);
 
@@ -167,7 +156,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     tests.addIncludePath(joltc_dep.path("include"));
-    tests.linkLibrary(joltc_lib);
+    tests.linkLibrary(lib);
 
     test_step.dependOn(&b.addRunArtifact(tests).step);
 }

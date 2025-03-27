@@ -8,12 +8,21 @@ Zig build for [joltc](https://github.com/amerkoleci/joltc)
 ## Linux:
 `zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast`
 
+Output: `zig-out/lib/linux/libjoltc.so`
+
 ## Windows:
 `zig build -Dtarget=x86_64-windows -Doptimize=ReleaseFast`
 
+Output: `zig-out/lib/windows/joltc.dll`
+
 ## MacOs:
 `zig build -Dtarget=x86_64-macos -Doptimize=ReleaseFast`
+
+Output: `zig-out/lib/macos_x86_64/libjoltc.dylib`
+
 `zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast`
+
+Output: `zig-out/lib/macos_arm/libjoltc.dylib`
 
 ---
 
