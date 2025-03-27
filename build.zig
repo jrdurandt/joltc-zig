@@ -29,11 +29,6 @@ pub fn build(b: *std.Build) !void {
             bool,
             "shared",
             "Build JoltC as shared lib",
-        ) orelse true,
-        .jph_shared = b.option(
-            bool,
-            "jph_shared",
-            "Build JoltPhysics as shared lib",
         ) orelse false,
         .no_exceptions = b.option(
             bool,
@@ -57,12 +52,12 @@ pub fn build(b: *std.Build) !void {
     });
 
     const flags = &.{
-        if (options.jph_shared) "-DJPH_SHARED_LIBRARY_BUILD" else "",
+        if (options.shared) "-DJPH_SHARED_LIBRARY_BUILD" else "",
         if (options.enable_cross_platform_determinism) "-DJPH_CROSS_PLATFORM_DETERMINISTIC" else "",
         if (options.enable_debug_renderer) "-DJPH_DEBUG_RENDERER" else "",
         if (options.use_double_precision) "-DJPH_DOUBLE_PRECISION" else "",
         if (options.enable_asserts) "-DJPH_ENABLE_ASSERTS" else "",
-        if (options.jph_shared) "-DJPH_SHARED_LIBRARY_BUILD" else "",
+        if (options.shared) "-DJPH_SHARED_LIBRARY_BUILD" else "",
         if (options.no_exceptions) "-fno-exceptions" else "",
         "-fno-access-control",
         "-fno-sanitize=undefined",
@@ -108,7 +103,7 @@ pub fn build(b: *std.Build) !void {
         .flags = flags,
     });
 
-    if (target.result.os.tag == .windows and options.jph_shared) {
+    if (target.result.os.tag == .windows and options.shared) {
         lib_mod.addCMacro("JPC_API", "extern __declspec(dllexport)");
     }
 
