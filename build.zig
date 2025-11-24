@@ -1,4 +1,7 @@
 const std = @import("std");
+const builtin = @import("builtin");
+const Build = std.Build;
+const OptimizeMode = std.builtin.OptimizeMode;
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
@@ -17,6 +20,61 @@ pub fn build(b: *std.Build) !void {
         ) orelse true,
     };
 
+    const joltc_mod = b.addModule("joltc", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = b.path("src/root.zig"),
+    });
+
+    const lib_joltc = try buildLibJoltc(b, .{
+        .target = target,
+        .optimize = optimize,
+        .shared = options.shared,
+        .no_exceptions = options.no_exceptions,
+    });
+
+    joltc_mod.linkLibrary(lib_joltc);
+
+    const mod_tests = b.addTest(.{
+        .root_module = joltc_mod,
+    });
+
+    const run_mod_tests = b.addRunArtifact(mod_tests);
+    const test_step = b.step("test", "Run tests");
+    test_step.dependOn(&run_mod_tests.step);
+}
+
+fn collectCppFiles(
+    allocator: std.mem.Allocator,
+    dir_path: []const u8,
+    files: *std.ArrayList([]const u8),
+) !void {
+    var dir = try std.fs.openDirAbsolute(dir_path, .{ .iterate = true });
+    defer dir.close();
+
+    var it = dir.iterate();
+    while (try it.next()) |entry| {
+        const full_path = try std.fs.path.join(allocator, &.{ dir_path, entry.name });
+        switch (entry.kind) {
+            .file => {
+                if (std.mem.endsWith(u8, entry.name, ".cpp")) {
+                    try files.append(allocator, full_path);
+                }
+            },
+            .directory => try collectCppFiles(allocator, full_path, files),
+            else => {},
+        }
+    }
+}
+
+pub const LibJoltcOptions = struct {
+    target: Build.ResolvedTarget,
+    optimize: OptimizeMode,
+    shared: bool = false,
+    no_exceptions: bool = true,
+};
+
+pub fn buildLibJoltc(b: *Build, options: LibJoltcOptions) !*Build.Step.Compile {
     const joltc_dep = b.dependency("joltc", .{});
     const jph_dep = b.dependency("jolt_physics", .{});
 
@@ -26,14 +84,15 @@ pub fn build(b: *std.Build) !void {
             .linkage = if (options.shared) .dynamic else .static,
             .root_module = b.createModule(
                 .{
-                    .target = target,
-                    .optimize = optimize,
+                    .target = options.target,
+                    .optimize = options.optimize,
+                    .link_libc = true,
                 },
             ),
         },
     );
 
-    if (options.shared and target.result.os.tag == .windows) {
+    if (options.shared and options.target.result.os.tag == .windows) {
         joltc.root_module.addCMacro("JPH_API", "extern __declspec(dllexport)");
     }
     b.installArtifact(joltc);
@@ -42,7 +101,7 @@ pub fn build(b: *std.Build) !void {
     joltc.addIncludePath(joltc_dep.path("include"));
     joltc.addIncludePath(jph_dep.path(""));
     joltc.linkLibC();
-    if (target.result.abi != .msvc) {
+    if (options.target.result.abi != .msvc) {
         joltc.linkLibCpp();
     } else {
         joltc.linkSystemLibrary("advapi32");
@@ -85,46 +144,5 @@ pub fn build(b: *std.Build) !void {
         .flags = c_flags,
     });
 
-    const joltc_mod = b.addModule("joltc", .{
-        .target = target,
-        .optimize = optimize,
-    });
-    joltc_mod.linkLibrary(joltc);
-
-    const test_mod = b.addModule("joltc_zig_test", .{
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    test_mod.linkLibrary(joltc);
-    const mod_tests = b.addTest(.{
-        .root_module = test_mod,
-    });
-
-    const run_mod_tests = b.addRunArtifact(mod_tests);
-    const test_step = b.step("test", "Run tests");
-    test_step.dependOn(&run_mod_tests.step);
-}
-
-fn collectCppFiles(
-    allocator: std.mem.Allocator,
-    dir_path: []const u8,
-    files: *std.ArrayList([]const u8),
-) !void {
-    var dir = try std.fs.openDirAbsolute(dir_path, .{ .iterate = true });
-    defer dir.close();
-
-    var it = dir.iterate();
-    while (try it.next()) |entry| {
-        const full_path = try std.fs.path.join(allocator, &.{ dir_path, entry.name });
-        switch (entry.kind) {
-            .file => {
-                if (std.mem.endsWith(u8, entry.name, ".cpp")) {
-                    try files.append(allocator, full_path);
-                }
-            },
-            .directory => try collectCppFiles(allocator, full_path, files),
-            else => {},
-        }
-    }
+    return joltc;
 }
