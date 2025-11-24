@@ -85,6 +85,12 @@ pub fn build(b: *std.Build) !void {
         .flags = c_flags,
     });
 
+    const joltc_mod = b.addModule("joltc", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    joltc_mod.linkLibrary(joltc);
+
     const test_mod = b.addModule("joltc_zig_test", .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
