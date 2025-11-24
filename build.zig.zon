@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.15.2",
     .dependencies = .{
         .joltc = .{
-            .url = "https://github.com/amerkoleci/joltc/archive/8bbe852aaf1b8f652027c11e60f63136f73c8083.tar.gz",
-            .hash = "N-V-__8AAGTcCADTamD_zOgaeNt0FoigOr_pr4W2euZe5bl4",
+            .url = "https://github.com/amerkoleci/joltc/archive/refs/heads/main.zip",
+            .hash = "N-V-__8AANkLCQA1zLwpDnfcUb3nc95-e27svi4bqKUpvScy",
         },
         .jolt_physics = .{
             .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.4.0.zip",
