@@ -6,10 +6,10 @@
     .dependencies = .{
         .joltc = .{
             .url = "https://github.com/amerkoleci/joltc/archive/refs/heads/main.zip",
-            .hash = "N-V-__8AANkLCQA1zLwpDnfcUb3nc95-e27svi4bqKUpvScy",
+            .hash = "N-V-__8AAGRDCwDumGdVpaBu4nFyfup10yu5Gnhzr288uPCf",
         },
         .jolt_physics = .{
-            .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.4.0.zip",
+            .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.5.0.zip",
             .hash = "N-V-__8AAFIjDAL0HTY9_5PjnWYFJ2jFkLRSROtYeru89Hq8",
         },
     },

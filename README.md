@@ -1,7 +1,5 @@
 # joltc-zig
 
-!WIP!
-
 [joltc](https://github.com/amerkoleci/joltc) bindings for [Zig](https://ziglang.org/)
 
 ## Acknowlegements
