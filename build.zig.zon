@@ -10,7 +10,7 @@
         },
         .jolt_physics = .{
             .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.5.0.zip",
-            .hash = "N-V-__8AAFIjDAL0HTY9_5PjnWYFJ2jFkLRSROtYeru89Hq8",
+            .hash = "N-V-__8AAAPKDAINa53XiVzIJ2I4V3AAjPxzQ_bJ9TD7TOOS",
         },
     },
     .paths = .{
