@@ -2,11 +2,11 @@
     .name = .joltc_zig,
     .version = "0.0.0",
     .fingerprint = 0x89591f3fa226df90,
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .joltc = .{
             .url = "https://github.com/amerkoleci/joltc/archive/refs/heads/main.zip",
-            .hash = "N-V-__8AAGRDCwDumGdVpaBu4nFyfup10yu5Gnhzr288uPCf",
+            .hash = "N-V-__8AAFSuCwBG0mXE5ni34LqfDcsF80oiEh2vQUUxf1ce",
         },
         .jolt_physics = .{
             .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.5.0.zip",
