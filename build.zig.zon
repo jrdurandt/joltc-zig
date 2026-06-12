@@ -6,7 +6,7 @@
     .dependencies = .{
         .joltc = .{
             .url = "https://github.com/amerkoleci/joltc/archive/refs/heads/main.zip",
-            .hash = "N-V-__8AAFSuCwBG0mXE5ni34LqfDcsF80oiEh2vQUUxf1ce",
+            .hash = "N-V-__8AAFm0CwB4d7JHat1Ls6yxrb93UCz_oH4G6VLxEFVv",
         },
         .jolt_physics = .{
             .url = "https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.5.0.zip",

@@ -21,6 +21,7 @@ pub fn build(b: *std.Build) !void {
     mod_test_joltc.linkLibrary(lib_joltc);
 
     const mod_tests = b.addTest(.{
+        .use_llvm = true,
         .root_module = mod_test_joltc,
     });
 
